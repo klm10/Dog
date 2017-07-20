@@ -93,7 +93,7 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
     @Override
     public void openRepositoriesScreen() {
         RepositoriesActivity.start(this);
-        finish();
+//        finish();
     }
 
     private void showAlert(){

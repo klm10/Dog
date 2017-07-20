@@ -25,6 +25,32 @@ public class DefaultGithubRepository implements GithubRepository {
     public Observable<List<CommitResponse>> commits(String user, String repo) {
         return ApiFactory.getGithubService()
                 .commits(user, repo)
+                .flatMap(commitResponses -> {
+                    for (CommitResponse commitResponse: commitResponses){
+                        commitResponse.setRepo(repo);
+                    }
+                    return Observable.just(commitResponses);
+                })
+                .flatMap(commitResponses -> {
+                    Realm.getDefaultInstance().executeTransaction(realm -> {
+                        RealmResults<CommitResponse> responses = realm.where(CommitResponse.class)
+                                .equalTo("repo", repo)
+                                .findAll();
+                        if (responses.size() > 0){
+                            responses.deleteAllFromRealm();
+                        }
+//                        realm.delete(CommitResponse.class);
+                        realm.insert(commitResponses);
+                    });
+                    return Observable.just(commitResponses);
+                })
+                .onErrorResumeNext(throwable -> {
+                    Realm realm = Realm.getDefaultInstance();
+                    RealmResults<CommitResponse> commitResponses = realm.where(CommitResponse.class)
+                            .equalTo("repo", repo)
+                            .findAll();
+                    return Observable.just(realm.copyFromRealm(commitResponses));
+                })
                 .compose(RxUtils.async());
 
 

@@ -53,7 +53,7 @@ public class AuthActivity extends AppCompatActivity implements AuthView {
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
         mLoginEdit.setText("klm10");
-        mPasswordEdit.setText("a6733578");
+        mPasswordEdit.setText("Abcd1111");
         mLoadingView = LoadingDialog.view(getSupportFragmentManager());
         LifecycleHandler lifecycleHandler = LoaderLifecycleHandler.create(this, getSupportLoaderManager());
         mPresenter = new AuthPresenter(lifecycleHandler, this);
